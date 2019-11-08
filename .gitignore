@@ -1,0 +1,7 @@
+/__pycache__
+/.vscode
+/ref/__pycache__
+/ref/data
+/ref/img
+/ref/dataPrepare.ipynb
+/ref/trainUnet.ipynb
