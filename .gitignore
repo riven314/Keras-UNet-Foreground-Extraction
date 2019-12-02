@@ -1,7 +1,5 @@
 /__pycache__
+/.ipynb_checkpoints
 /.vscode
-/ref/__pycache__
-/ref/data
-/ref/img
-/ref/dataPrepare.ipynb
-/ref/trainUnet.ipynb
+/ref
+/check_data.ipynb
