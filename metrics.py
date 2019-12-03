@@ -45,8 +45,10 @@ def jaccard_distance(y_true, y_pred, smooth = 100):
     # References
         - implementation from kera lib: https://github.com/keras-team/keras-contrib/blob/master/keras_contrib/losses/jaccard.py
     """
-    intersection = K.sum(K.abs(y_true * y_pred), axis=-1)
-    sum_ = K.sum(K.abs(y_true) + K.abs(y_pred), axis=-1)
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(K.abs(y_true_f * y_pred_f), axis=-1)
+    sum_ = K.sum(K.abs(y_true_f) + K.abs(y_pred_f), axis=-1)
     jac = (intersection + smooth) / (sum_ - intersection + smooth)
     return (1 - jac) * smooth
 
