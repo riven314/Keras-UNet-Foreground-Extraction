@@ -16,6 +16,9 @@ from keras import backend as keras
 
 def unet(pretrained_weights = None, input_shape = (256,256,1), scale = 1, dropout = 0.5):
     """
+    According to "Raw G-Band Chromosome Image Segmentation Using U-Net Based Neural Network"
+    # parameters are halved compared to original UNet
+
     input:
         scale -- float, if scale = 0.5, then all channels are halved
         dropout -- float, dropout rate
