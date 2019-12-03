@@ -14,7 +14,7 @@ from keras.callbacks import ModelCheckpoint, LearningRateScheduler
 from keras import backend as keras
 
 
-def unet(pretrained_weights = None, input_shape = (256,256,1), scale = 1, dropout = 0.5):
+def init_unet(input_shape = (256,256,1), scale = 1, dropout = 0.5):
     """
     According to "Raw G-Band Chromosome Image Segmentation Using U-Net Based Neural Network"
     # parameters are halved compared to original UNet
@@ -68,11 +68,6 @@ def unet(pretrained_weights = None, input_shape = (256,256,1), scale = 1, dropou
     model = Model(input = inputs, output = conv10)
     return model
 
-    #model.compile(optimizer = Adam(lr = 1e-4), loss = 'binary_crossentropy', metrics = ['accuracy'])
-    #model.summary()
-    #if(pretrained_weights):
-    #	model.load_weights(pretrained_weights)
-    #return model
 
 if __name__ == '__main__':
     model = unet()
