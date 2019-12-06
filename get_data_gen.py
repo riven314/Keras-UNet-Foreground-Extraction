@@ -17,7 +17,7 @@ DATA_AUG_ARGS = dict(
         )
 
 
-def get_data_gen(batch_size, train_path, aug_dict, target_size):
+def generate_data(batch_size, train_path, aug_dict, target_size):
     """
     return data generator together with number of samples in the folder
 
