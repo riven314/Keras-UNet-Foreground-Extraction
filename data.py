@@ -5,6 +5,7 @@ import os
 import glob
 import skimage.io as io
 import skimage.transform as trans
+import matplotlib.pyplot as plt
 
 Sky = [128,128,128]
 Building = [128,0,0]
@@ -19,7 +20,7 @@ Pedestrian = [64,64,0]
 Bicyclist = [0,128,192]
 Unlabelled = [0,0,0]
 
-COLOR_DICT = np.array([Sky, Building, Pole, Road, Pavement,
+COLOR_DICT = np.array([Building, Sky, Pole, Road, Pavement,
                           Tree, SignSymbol, Fence, Car, Pedestrian, Bicyclist, Unlabelled])
 
 
@@ -52,8 +53,14 @@ def trainGenerator(batch_size,train_path,image_folder,mask_folder,aug_dict,image
     use the same seed for image_datagen and mask_datagen to ensure the transformation for image and mask is the same
     if you want to visualize the results of generator, set save_to_dir = "your path"
     '''
-    image_datagen = ImageDataGenerator(**aug_dict)
-    mask_datagen = ImageDataGenerator(**aug_dict)
+    # added by Alex to enable NO data augmentation
+    if aug_dict is None:
+        image_datagen = ImageDataGenerator()
+        mask_datagen = ImageDataGenerator()
+    else:
+        image_datagen = ImageDataGenerator(**aug_dict)
+        mask_datagen = ImageDataGenerator(**aug_dict)
+    # define generator
     image_generator = image_datagen.flow_from_directory(
         train_path,
         classes = [image_folder],
@@ -81,9 +88,11 @@ def trainGenerator(batch_size,train_path,image_folder,mask_folder,aug_dict,image
 
 
 
-def testGenerator(test_path,num_image = 30,target_size = (256,256),flag_multi_class = False,as_gray = True):
-    for i in range(num_image):
-        img = io.imread(os.path.join(test_path,"%d.png"%i),as_gray = as_gray)
+def testGenerator(test_path, num_image, target_size = (256,256), flag_multi_class = False, as_gray = True):
+    assert os.path.isdir(test_path), '[ERROR] test path not exist'
+    f_ls = [f for f in os.listdir(test_path) if f.endswith('.jpg')]
+    for i in f_ls:
+        img = io.imread(os.path.join(test_path, i),as_gray = as_gray)
         img = img / 255
         img = trans.resize(img,target_size)
         img = np.reshape(img,img.shape+(1,)) if (not flag_multi_class) else img
@@ -110,11 +119,13 @@ def geneTrainNpy(image_path,mask_path,flag_multi_class = False,num_class = 2,ima
 
 def labelVisualize(num_class,color_dict,img):
     img = img[:,:,0] if len(img.shape) == 3 else img
+    # hardcode index
+    img[img <= 0.5] = 0
+    img[img > 0.5] = 1
     img_out = np.zeros(img.shape + (3,))
     for i in range(num_class):
         img_out[img == i,:] = color_dict[i]
-    return img_out / 255
-
+    return img_out
 
 
 def saveResult(save_path,npyfile,flag_multi_class = False,num_class = 2):

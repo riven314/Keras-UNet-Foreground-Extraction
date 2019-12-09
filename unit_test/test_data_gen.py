@@ -1,3 +1,8 @@
+"""
+check that:
+1. data augmentation input shape matches
+2. check data augmentation can be disabled
+"""
 import os
 import sys
 PATH = os.path.join(os.getcwd(), '..')
@@ -9,6 +14,8 @@ from get_data_gen import DATA_AUG_ARGS, generate_data
 BATCH_SIZE = 1
 TARGET_SIZE = (480, 640)
 N = 3 # no. of batch to be checked
+DATA_AUG_ARGS = None
+
 TRAIN_PATH = os.path.join('..', '..', '..', 'data', 'ready', 'train')
 VAL_PATH = os.path.join('..', '..', '..', 'data', 'ready', 'val')
 TEST_PATH = os.path.join('..', '..', '..', 'data', 'ready', 'test')
