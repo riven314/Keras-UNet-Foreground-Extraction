@@ -44,6 +44,7 @@ parser.add_argument('--bs', type = int, default = 3, help = 'batch size')
 parser.add_argument('--epochs', type = int, default = 1, help = 'number of epochs for training')
 parser.add_argument('--dropout', type = float, default = 0.5, help = 'dropout rate')
 parser.add_argument('--scale', type = float, default = 0.5, help = 'scale of UNet (e.g. 0.5 mean halves the parameters)')
+parser.add_argument('--gpu_n', type = int, default = 1, help = 'no. of GPU, if gpu_n>1, activate multi-GPU training')
 parser.add_argument('--no_aug', action = 'store_true', help = 'whether activate data augmentation')
 parser.add_argument('--no_early_stop', action = 'store_true', help = 'whether activate early stopping')
 parser.add_argument('--no_save_model', action = 'store_true',  help = 'whether save model weights')
@@ -60,6 +61,7 @@ BATCH_SIZE = args.bs
 EPOCHS = args.epochs
 DROPOUT = args.dropout
 SCALE = args.scale
+GPU_N = args.gpu_n
 IS_DATA_AUG = not args.no_aug
 IS_EARLY_STOP = not args.no_early_stop
 IS_SAVE_MODEL = not args.no_save_model
@@ -78,6 +80,7 @@ print('Batch Size: {}'.format(BATCH_SIZE))
 print('No. of Epochs: {}'.format(EPOCHS))
 print('Dropout Rate: {}'.format(DROPOUT))
 print('Scale: {}'.format(SCALE))
+print('No. GPU: {}'.format(GPU_N))
 print('Aug Mode: {}'.format(IS_DATA_AUG))
 print('Early Stop: {}'.format(IS_EARLY_STOP))
 print('Save Model: {}'.format(IS_SAVE_MODEL))
@@ -86,7 +89,10 @@ print('Reduce LR: {}'.format(IS_REDUCE_LR))
 
 ############## 2. SET UP MODEL AND DATA ##############
 # attach channel 1 in last
-model = compile_unet(INPUT_SHAPE + (1,), scale = SCALE, dropout = DROPOUT)
+model = compile_unet(INPUT_SHAPE + (1,), 
+                     scale = SCALE, 
+                     dropout = DROPOUT,
+                     gpu_n = GPU_N)
 
 if IS_DATA_AUG:
     DATA_AUG_ARGS = None

@@ -70,4 +70,4 @@ def init_unet(input_shape = (256,256,1), scale = 1, dropout = 0.5):
 
 
 if __name__ == '__main__':
-    model = unet()
+    model = init_unet()
