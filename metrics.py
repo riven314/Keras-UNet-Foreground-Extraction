@@ -21,8 +21,27 @@ import tensorflow as tf
 import keras.backend as K
 
 
+def fg_recall(y_true, y_pred):
+    """
+    soft metrics
+
+    key metrics for preventing loss of chromosomes
+
+    input:
+        y_true: The ground truth tensor. (M, H, W, C)
+        y_pred: The predicted tensor, (M, H, W, C)
+    """
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    gt = K.sum(y_true_f)
+    intersection = K.sum(y_true_f * y_pred_f)
+    return intersection / gt
+
+
 def dice_coef(y_true, y_pred):
     """
+    soft metrics
+
     input:
         y_true: The ground truth tensor. (M, H, W, C)
         y_pred: The predicted tensor, (M, H, W, C)
@@ -35,6 +54,8 @@ def dice_coef(y_true, y_pred):
 
 def jaccard_distance(y_true, y_pred, smooth = 100):
     """
+    soft metrics
+
     Jaccard = (|X & Y|)/ (|X|+ |Y| - |X & Y|)
             = sum(|A*B|)/(sum(|A|)+sum(|B|)-sum(|A*B|))
     input:

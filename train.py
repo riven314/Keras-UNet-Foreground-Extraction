@@ -115,8 +115,8 @@ if not os.path.isdir('weights'):
 
 call_back_ls = []
 if IS_EARLY_STOP:
-    early_stop = EarlyStopping(monitor = 'val_loss', 
-                               patience = 5, 
+    early_stop = EarlyStopping(monitor = 'loss', 
+                               patience = 8, 
                                verbose = 1)
     call_back_ls.append(early_stop)
 if IS_SAVE_MODEL:
@@ -125,9 +125,9 @@ if IS_SAVE_MODEL:
                                  monitor = 'val_loss')
     call_back_ls.append(model_save)
 if IS_REDUCE_LR:
-    reduce_lr = ReduceLROnPlateau(monitor = 'val_loss', 
+    reduce_lr = ReduceLROnPlateau(monitor = 'loss', 
                                   factor = 0.2, 
-                                  patience = 2, 
+                                  patience = 5, 
                                   verbose = 1, 
                                   epsilon = 1e-4)
     call_back_ls.append(reduce_lr)
@@ -145,13 +145,14 @@ model.fit_generator(train_gen, steps_per_epoch = train_n // BATCH_SIZE,
 
 ############### 4. TEST EVALUATION ###################
 print('Test Set Evaluation')
-test_n = len([i for i in os.listdir(os.path.join(TEST_PATH)) if i.endswith('.jpg')])
+test_f_ls = [i for i in os.listdir(os.path.join(TEST_PATH)) if i.endswith('.jpg')]
+test_n = len(test_f_ls)
 test_gen = testGenerator(TEST_PATH, 
-                         num_image = test_n,
+                         num_image = 1,
                          target_size = INPUT_SHAPE)
+# shape: (steps, height, width, 1)
 results = model.predict_generator(test_gen, 
-                                  steps = max(val_n // BATCH_SIZE, 1), 
+                                  steps = test_n, 
                                   verbose = 1)
-if VIS_PATH is not None:
-    saveResult(VIS_PATH, results)
+if VIS_PATH is not None: saveResult(VIS_PATH, results, test_f_ls)
 

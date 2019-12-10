@@ -6,7 +6,7 @@ from keras.optimizers import *
 from keras.utils import multi_gpu_model
 
 from unet import init_unet
-from metrics import dice_coef, jaccard_distance
+from metrics import dice_coef, jaccard_distance, fg_recall
 from data import *
 
 def compile_unet(input_shape, scale = 0.5, dropout = 0.5, lr = 0.0001, gpu_n = 1):
@@ -21,14 +21,14 @@ def compile_unet(input_shape, scale = 0.5, dropout = 0.5, lr = 0.0001, gpu_n = 1
         # single GPU
         unet.compile(optimizer = Adam(lr = lr),
                      loss = 'binary_crossentropy',
-                     metrics = [dice_coef, jaccard_distance])
+                     metrics = [dice_coef, jaccard_distance, fg_recall])
         return unet
     else:
         # multi gpu
         parallel_unet = multi_gpu_model(unet, gpus = gpu_n)
         parallel_unet.compile(optimizer = Adam(lr = lr),
                               loss = 'binary_crossentropy',
-                              metrics = [dice_coef, jaccard_distance])
+                              metrics = [dice_coef, jaccard_distance, fg_recall])
         return parallel_unet
         
     

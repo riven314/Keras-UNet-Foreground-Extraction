@@ -20,8 +20,8 @@ Pedestrian = [64,64,0]
 Bicyclist = [0,128,192]
 Unlabelled = [0,0,0]
 
-COLOR_DICT = np.array([Building, Sky, Pole, Road, Pavement,
-                          Tree, SignSymbol, Fence, Car, Pedestrian, Bicyclist, Unlabelled])
+COLOR_DICT = np.array([Tree, Sky, Pole, Road, Pavement, Building, SignSymbol, 
+                       Fence, Car, Pedestrian, Bicyclist, Unlabelled])
 
 
 def adjustData(img, mask, flag_multi_class, num_class):
@@ -117,18 +117,27 @@ def geneTrainNpy(image_path,mask_path,flag_multi_class = False,num_class = 2,ima
     return image_arr,mask_arr
 
 
-def labelVisualize(num_class,color_dict,img):
-    img = img[:,:,0] if len(img.shape) == 3 else img
-    # hardcode index
-    img[img <= 0.5] = 0
-    img[img > 0.5] = 1
-    img_out = np.zeros(img.shape + (3,))
-    for i in range(num_class):
-        img_out[img == i,:] = color_dict[i]
-    return img_out
+def generate_mask(pred_img):
+    """
+    generate binary mask
+
+    input:
+        pred_img -- np array, output from UNet (1 channel)
+        orig_img -- np array, original image (1 channel)
+    """
+    pred_img = pred_img[:,:,0]
+    mask = np.zeros(pred_img.shape, dtype = np.uint8)
+    mask[pred_img <= 0.5] = 0
+    mask[pred_img > 0.5] = 255
+    return mask
 
 
-def saveResult(save_path,npyfile,flag_multi_class = False,num_class = 2):
-    for i,item in enumerate(npyfile):
-        img = labelVisualize(num_class,COLOR_DICT,item) if flag_multi_class else item[:,:,0]
-        io.imsave(os.path.join(save_path,"%d_predict.png"%i),img)
+def saveResult(save_path, npyfile, file_ls):
+    """
+    assume npyfile is only one image
+    """
+    for _, (item, f_name) in enumerate(zip(npyfile, file_ls)):
+        name, _ = os.path.splitext(f_name)
+        w_path = os.path.join(save_path, '{}_predict.png'.format(name))
+        mask = generate_mask(item)
+        io.imsave(w_path, mask)
